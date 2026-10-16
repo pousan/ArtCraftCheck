@@ -23,3 +23,6 @@ __pycache__/
 # User Data & Projects
 Workspace/
 
+# Blender backups
+*.blend1
+*.blend2
