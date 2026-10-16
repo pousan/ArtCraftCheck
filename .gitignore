@@ -1,0 +1,21 @@
+# ArtCraft Git Ignore
+
+# Application bundles & binaries
+Apps/
+Installers/
+internal_backup/
+Apps_backup/
+*.dmg
+*.app/Contents/MacOS/*
+!ArtCraft Launcher (SSD).app/Contents/MacOS/launcher
+.install-tmp/
+__pycache__/
+*.pyc
+
+# Caches and locks
+.artcraft-ssd-installer.lock
+.updater_cache.json
+.DS_Store
+
+# Temporary files
+*.tmp*

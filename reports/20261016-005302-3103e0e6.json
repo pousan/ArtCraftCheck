@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "run_id": "20261016-005302-3103e0e6",
+  "started_at": "2026-10-16T00:53:02+09:00",
+  "mode": "inspect",
+  "only": "PhotoCraft",
+  "launch_check_requested": false,
+  "volume": {
+    "mount_line": "/dev/disk5s1 on /Volumes/AdobeApps (apfs, local, nodev, nosuid, journaled, noowners)",
+    "device": "/dev/disk5s1",
+    "mount_point": "/Volumes/AdobeApps"
+  },
+  "capacity": {
+    "unit": "SI decimal",
+    "before": {
+      "total_bytes": 999995129856,
+      "used_bytes": 29243129856,
+      "free_bytes": 970752000000
+    },
+    "dmg_total_bytes": 90386785,
+    "after": {
+      "total_bytes": 999995129856,
+      "used_bytes": 29243129856,
+      "free_bytes": 970752000000
+    },
+    "installed_apps_total_bytes": 0
+  },
+  "apps": [
+    {
+      "app": "PhotoCraft",
+      "app_id": "photocraft",
+      "expected_version": "0.9.0",
+      "expected_bundle_id": "ai.storyteller.photocraft",
+      "expected_team_id": "DJ6XS33FX8",
+      "dmg": "/Volumes/AdobeApps/ArtCraft/Installers/photocraft-0.9.0-macos-universal.dmg",
+      "destination": "/Volumes/AdobeApps/ArtCraft/Apps/PhotoCraft.app",
+      "status": "failed",
+      "launch": {
+        "status": "not_requested"
+      },
+      "internal_copy": {
+        "path": "/Applications/PhotoCraft.app",
+        "exists": true,
+        "version": "0.9.0",
+        "comparison_to_dmg": 0,
+        "decision": "continue"
+      },
+      "dmg_size_bytes": 90386785,
+      "reason": "公開チェックサムを取得できません: <urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ],
+  "finished_at": "2026-10-16T00:53:02+09:00"
+}

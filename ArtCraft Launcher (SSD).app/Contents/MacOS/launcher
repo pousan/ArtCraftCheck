@@ -1,0 +1,11 @@
+#!/bin/bash
+DIR="/Volumes/AdobeApps/ArtCraft"
+
+# Check if server is running
+if ! pgrep -f "launcher_server.py" > /dev/null; then
+    nohup /usr/bin/python3 "$DIR/launcher_server.py" > /dev/null 2>&1 &
+    sleep 0.8
+fi
+
+# Open in default browser
+/usr/bin/open "http://127.0.0.1:58820/"

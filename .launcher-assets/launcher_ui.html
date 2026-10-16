@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtCraft SSD Launcher</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: rgba(26, 31, 46, 0.7);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-hover-border: rgba(99, 133, 255, 0.4);
+  --text: #f0f3f8;
+  --text-muted: #8b949e;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-glow: rgba(59, 130, 246, 0.25);
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --glass: blur(20px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "SF Pro Display", sans-serif;
+  background: var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 40px;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+.logo-area h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-ssd {
+  font-size: 11px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.disk-meter {
+  background: var(--card-bg);
+  backdrop-filter: var(--glass);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.disk-meter-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.disk-meter-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.disk-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.btn-icon {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  backdrop-filter: var(--glass);
+}
+
+.btn-icon:hover {
+  border-color: var(--card-hover-border);
+  transform: translateY(-1px);
+  background: rgba(40, 48, 70, 0.8);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-chip.active, .filter-chip:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.search-input {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  width: 240px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: var(--glass);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--card-hover-border);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  object-fit: contain;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  background: rgba(0,0,0,0.2);
+}
+
+.card-title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+}
+
+.card-badge.running {
+  background: var(--success-bg);
+  color: var(--success);
+  font-weight: 600;
+}
+
+.card-category {
+  font-size: 12px;
+  color: var(--accent-hover);
+  margin-top: 2px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  height: 38px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.card-version {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: ui-monospace, Menlo, Monaco, monospace;
+}
+
+.btn-launch {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btn-launch:hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  transform: scale(1.03);
+}
+
+.btn-launch:active {
+  transform: scale(0.97);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1f2937;
+  border: 1px solid var(--accent);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  font-size: 14px;
+  font-weight: 500;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  animation: slideUp 0.3s forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #1a1f2e;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 32px;
+  width: 90%;
+  max-width: 520px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+.modal-header {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.modal-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* Step Indicator Bar */
+.step-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: relative;
+}
+.step-bar::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+.step-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1f293d;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  transition: all 0.3s;
+}
+.step-item.active .step-dot {
+  border-color: #3b82f6;
+  background: #2563eb;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+}
+.step-item.completed .step-dot {
+  border-color: #10b981;
+  background: #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+.step-item.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Live Research List */
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.research-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.research-row.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-left: 3px solid #3b82f6;
+}
+
+/* Big Action Switch Button */
+.btn-switch-action {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+.btn-switch-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+}
+.btn-switch-action:active {
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <img src="/assets/launcher.png" class="logo-icon" alt="ArtCraft">
+    <div>
+      <h1>ArtCraft Studio <span class="badge-ssd">SSD Edition</span></h1>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">外付けSSD（AdobeApps）専用アプリケーションランチャー</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="disk-meter" id="diskMeter">
+      <div class="disk-meter-top">
+        <span>外付けSSD 空き容量</span>
+        <strong id="diskFree">- GB / - GB</strong>
+      </div>
+      <div class="disk-meter-bar">
+        <div class="disk-meter-fill" id="diskFill" style="width: 0%"></div>
+      </div>
+    </div>
+    <button class="btn-icon" onclick="revealFolder('apps')">
+      📁 Appsフォルダを開く
+    </button>
+    <button class="btn-icon" id="btnUpdateCheck" onclick="checkUpdates(true)">
+      🔄 アップデート確認
+    </button>
+    <button class="btn-icon" onclick="triggerTestPopup()" title="2週間経過ポップアップの動作を今すぐテストします">
+      🧪 2週定期テスト
+    </button>
+    <button class="btn-icon" onclick="openSyncModal()">
+      🔗 公式Launcher連携
+    </button>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="filters" id="filters">
+    <button class="filter-chip active" onclick="setFilter('all')">すべて (12)</button>
+    <button class="filter-chip" onclick="setFilter('画像・写真')">画像・写真</button>
+    <button class="filter-chip" onclick="setFilter('デザイン')">デザイン</button>
+    <button class="filter-chip" onclick="setFilter('映像・動画')">映像・動画</button>
+    <button class="filter-chip" onclick="setFilter('オフィス')">オフィス</button>
+  </div>
+  <input type="text" class="search-input" id="search" placeholder="アプリを検索..." oninput="renderApps()">
+</div>
+
+<div class="grid" id="appsGrid">
+  <!-- Dynamic cards inserted here -->
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal 1: 2-Week Periodic Update Notice Popup -->
+<div class="modal" id="schedulePromptModal">
+  <div class="modal-content" style="max-width: 540px; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 30px rgba(59, 130, 246, 0.2);">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+      <div style="font-size: 32px;">🔔</div>
+      <div>
+        <div class="modal-header" style="margin-bottom: 2px;">定期アップデートのご案内</div>
+        <div style="font-size: 12px; color: #60a5fa; font-weight: 600;">2週間に一度の定期チェックサイクル</div>
+      </div>
+    </div>
+    <div class="modal-desc" id="schedulePromptDesc">
+      前回の更新確認から<strong>2週間</strong>が経過しました。<br>
+      GitHubリポジトリを自動リサーチし、ArtCraftアプリ（12本）の新バージョンがあれば差分のみを安全に更新します。
+    </div>
+    
+    <!-- Big Action Switch Button -->
+    <div style="margin: 20px 0 16px 0;">
+      <button class="btn-switch-action" onclick="startFullPipelineFromPrompt()">
+        <span style="font-size: 20px;">⚡</span>
+        <span>リサーチ ＆ 差分インストールを開始する</span>
+      </button>
+    </div>
+
+    <div class="modal-buttons" style="justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+      <button class="btn-icon" style="font-size: 12px; color: var(--text-muted);" onclick="snoozePrompt(1)">
+        🕒 あとで通知（次回起動時）
+      </button>
+      <button class="btn-icon" style="font-size: 12px; color: var(--text-muted);" onclick="snoozePrompt(14)">
+        ⏭️ 今回はスキップ（また2週間後）
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Full Auto Pipeline Console Screen (Research -> Diff -> Install) -->
+<div class="modal" id="pipelineModal">
+  <div class="modal-content" style="max-width: 680px; border: 1px solid rgba(255,255,255,0.15);">
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <span id="pipelineTitle">🚀 全自動アップデート進行中</span>
+      <span id="pipelineBadge" class="badge-ssd" style="background: #3b82f6;">進行中</span>
+    </div>
+
+    <!-- Step Indicator Bar -->
+    <div class="step-bar">
+      <div class="step-item active" id="step1">
+        <div class="step-dot">1</div>
+        <span>リサーチ調査</span>
+      </div>
+      <div class="step-item" id="step2">
+        <div class="step-dot">2</div>
+        <span>差分特定</span>
+      </div>
+      <div class="step-item" id="step3">
+        <div class="step-dot">3</div>
+        <span>安全検証・配置</span>
+      </div>
+      <div class="step-item" id="step4">
+        <div class="step-dot">4</div>
+        <span>完了</span>
+      </div>
+    </div>
+
+    <!-- Live Status Box -->
+    <div style="background: rgba(0, 0, 0, 0.4); padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.08);">
+      <div style="font-size: 14px; font-weight: 600; color: #60a5fa; margin-bottom: 6px;" id="currentStatusText">
+        GitHub Releases の全リポジトリを調査しています...
+      </div>
+      <div class="disk-meter-bar" style="height: 8px; margin-bottom: 6px;">
+        <div class="disk-meter-fill" id="pipelineProgressFill" style="width: 5%"></div>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;" id="currentStatusSub">
+        <span>全12アプリを順次スキャン中</span>
+        <span id="pipelineProgressPercent">5%</span>
+      </div>
+    </div>
+
+    <!-- Live 12 Apps Research Grid -->
+    <div class="research-grid" id="pipelineResearchGrid">
+      <!-- 12 App rows dynamically inserted here -->
+    </div>
+
+    <!-- Summary Box (shown on finish) -->
+    <div id="pipelineFinishSummary" style="display: none; margin-top: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 16px; border-radius: 12px; text-align: center;">
+      <div style="font-size: 28px; margin-bottom: 6px;">🎉</div>
+      <div style="font-size: 16px; font-weight: 700; color: #34d399; margin-bottom: 4px;" id="finishTitle">
+        リサーチと差分インストールが完了しました！
+      </div>
+      <div style="font-size: 13px; color: var(--text); margin-bottom: 8px;" id="finishDetail">
+        更新されたアプリ: 0本 / 最新維持: 12本
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted);" id="finishNextSchedule">
+        次回のお知らせ予定日: 2026年10月30日（2週間後）
+      </div>
+    </div>
+
+    <div class="modal-buttons" style="margin-top: 20px;">
+      <button class="btn-launch" id="btnPipelineDone" onclick="closePipelineModal()" style="display: none; width: 100%;">
+        ランチャーへ戻る
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Sync with Official Launcher -->
+<div class="modal" id="syncModal">
+  <div class="modal-content">
+    <div class="modal-header">🔗 公式 ArtCraft Launcher 連携</div>
+    <div class="modal-desc">
+      内蔵ディスクの <code>/Applications</code> にある実体アプリを外付けSSDへのシンボリックリンクに切り替えます。<br><br>
+      これにより、<strong>内蔵SSDの容量を約2GB節約</strong>しながら、既存の公式 <code>ArtCraft Launcher.app</code> から外付けSSDのアプリを直接起動できるようになります。<br><br>
+      ※元の実体は <code>internal_backup</code> フォルダに安全に退避され、いつでも解除（復元）可能です。
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-icon" onclick="closeSyncModal()">キャンセル</button>
+      <button class="btn-icon" onclick="executeSync('restore')" style="color: #f87171;">リンク解除（復元）</button>
+      <button class="btn-launch" onclick="executeSync('link')">外付けへリンク（推奨）</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Updates -->
+<div class="modal" id="updateModal">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header">🔄 GitHub リリース アップデート情報</div>
+    <div class="modal-desc" id="updateModalContent">
+      最新リリース情報を確認しています...
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-icon" onclick="closeUpdateModal()">閉じる</button>
+      <button class="btn-launch" id="btnApplyAllUpdates" onclick="applyAllUpdates()" style="display: none;">一括安全アップデート</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let allApps = [];
+let updateMap = {};
+let currentFilter = 'all';
+
+async function fetchStatus() {
+  try {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+    allApps = data.apps;
+    updateDisk(data.disk);
+    renderApps();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function updateDisk(disk) {
+  if (!disk) return;
+  document.getElementById('diskFree').textContent = `${disk.free_gb} GB 空き / ${disk.total_gb} GB`;
+  document.getElementById('diskFill').style.width = `${disk.percent}%`;
+}
+
+function setFilter(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-chip').forEach(el => {
+    el.classList.toggle('active', el.textContent.includes(cat) || (cat === 'all' && el.textContent.includes('すべて')));
+  });
+  renderApps();
+}
+
+function renderApps() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const grid = document.getElementById('appsGrid');
+  grid.innerHTML = '';
+
+  const filtered = allApps.filter(app => {
+    const matchCat = currentFilter === 'all' || app.category.includes(currentFilter);
+    const matchQuery = app.name.toLowerCase().includes(query) || app.desc.toLowerCase().includes(query);
+    return matchCat && matchQuery;
+  });
+
+  filtered.forEach(app => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const upInfo = updateMap[app.name.toLowerCase()];
+    const hasUp = upInfo && upInfo.has_update;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <img src="${app.icon || '/assets/launcher.png'}" class="card-icon" alt="${app.name}">
+        <div class="card-title-group">
+          <div class="card-title">
+            ${app.name}
+            ${app.running ? '<span class="card-badge running">● 実行中</span>' : ''}
+            ${hasUp ? `<span class="card-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4);">▲ v${upInfo.latest_version}</span>` : ''}
+          </div>
+          <div class="card-category">${app.category}</div>
+        </div>
+      </div>
+      <div class="card-desc">${app.desc}</div>
+      <div class="card-footer">
+        <span class="card-version">v${app.version}</span>
+        <div style="display: flex; gap: 8px;">
+          ${hasUp ? `<button class="btn-launch" style="background: linear-gradient(135deg, #eab308, #ca8a04);" onclick="applySingleUpdate('${upInfo.app_id}')">更新</button>` : ''}
+          <button class="btn-launch" onclick="launchApp('${app.name}')">起動する</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+async function checkUpdates(openModal = false) {
+  if (openModal) {
+    document.getElementById('updateModal').style.display = 'flex';
+    document.getElementById('updateModalContent').innerHTML = '<div style="text-align: center; padding: 20px;">🔄 GitHub Releases を確認しています...</div>';
+    document.getElementById('btnApplyAllUpdates').style.display = 'none';
+  }
+  try {
+    const res = await fetch('/api/updates/check');
+    const data = await res.json();
+    if (data.ok && data.results) {
+      updateMap = {};
+      let upCount = 0;
+      let html = '<div style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">';
+      data.results.forEach(r => {
+        updateMap[r.app_id] = r;
+        if (r.has_update) {
+          upCount++;
+          html += `
+            <div style="background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>${r.name}</strong> <span style="color: var(--text-muted); font-size: 12px;">v${r.local_version || '未導入'} → <strong style="color: #4ade80;">v${r.latest_version}</strong></span>
+              </div>
+              <button class="btn-launch" style="padding: 4px 12px; font-size: 12px;" onclick="applySingleUpdate('${r.app_id}')">更新</button>
+            </div>
+          `;
+        }
+      });
+      html += '</div>';
+
+      if (openModal) {
+        if (upCount > 0) {
+          document.getElementById('updateModalContent').innerHTML = `
+            <p style="margin-bottom: 14px; color: #facc15; font-weight: 600;">🔔 ${upCount} 本のアプリに最新バージョンが見つかりました！</p>
+            ${html}
+          `;
+          document.getElementById('btnApplyAllUpdates').style.display = 'block';
+        } else {
+          document.getElementById('updateModalContent').innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <div style="font-size: 32px; margin-bottom: 10px;">✨</div>
+              <p style="font-size: 15px; font-weight: 600; color: #4ade80;">すべてのアプリが最新バージョンです！</p>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">全12本のArtCraftアプリは外付けSSD上で最新状態に保たれています。</p>
+            </div>
+          `;
+          document.getElementById('btnApplyAllUpdates').style.display = 'none';
+        }
+      }
+      renderApps();
+    }
+  } catch (e) {
+    if (openModal) {
+      document.getElementById('updateModalContent').innerHTML = `<p style="color: #f87171;">❌ アップデート情報の取得に失敗しました: ${e}</p>`;
+    }
+  }
+}
+
+function closeUpdateModal() {
+  document.getElementById('updateModal').style.display = 'none';
+}
+
+async function applyAllUpdates() {
+  closeUpdateModal();
+  showToast('⚡ 一括安全アップデートを実行中...（しばらくお待ちください）');
+  try {
+    const res = await fetch('/api/updates/apply');
+    const data = await res.json();
+    if (data.ok) {
+      showToast('🎉 すべてのアップデートが完了しました！');
+      checkUpdates(false);
+      fetchStatus();
+    } else {
+      alert(`アップデート失敗:\n${data.output}`);
+    }
+  } catch (e) {
+    showToast('❌ アップデート処理に失敗しました');
+  }
+}
+
+async function applySingleUpdate(appId) {
+  closeUpdateModal();
+  showToast(`⚡ ${appId} を安全更新中...`);
+  try {
+    const res = await fetch(`/api/updates/apply?app=${appId}`);
+    const data = await res.json();
+    if (data.ok) {
+      showToast(`🎉 ${appId} のアップデートが完了しました！`);
+      checkUpdates(false);
+      fetchStatus();
+    } else {
+      alert(`アップデート失敗:\n${data.output}`);
+    }
+  } catch (e) {
+    showToast('❌ アップデート処理に失敗しました');
+  }
+}
+
+async function launchApp(name) {
+  showToast(`🚀 ${name} を起動しています...`);
+  try {
+    const res = await fetch(`/api/launch?app=${encodeURIComponent(name)}`);
+    const data = await res.json();
+    if (data.ok) {
+      setTimeout(fetchStatus, 1500);
+    } else {
+      showToast(`❌ エラー: ${data.error}`);
+    }
+  } catch (e) {
+    showToast(`❌ 起動リクエストに失敗しました`);
+  }
+}
+
+async function revealFolder(target) {
+  await fetch(`/api/reveal?target=${target}`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'flex';
+  setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+function openSyncModal() {
+  document.getElementById('syncModal').style.display = 'flex';
+}
+
+function closeSyncModal() {
+  document.getElementById('syncModal').style.display = 'none';
+}
+
+async function executeSync(action) {
+  closeSyncModal();
+  showToast(`⚙️ 公式Launcher連携を処理中 (${action})...`);
+  try {
+    const res = await fetch(`/api/sync?action=${action}`);
+    const data = await res.json();
+    if (data.ok) {
+      showToast(action === 'link' ? '✅ 公式Launcherとの連携が完了しました！' : '✅ 内蔵実体へ復元しました！');
+      fetchStatus();
+    } else {
+      alert(`エラーが発生しました:\n${data.output}`);
+    }
+  } catch (e) {
+    showToast('❌ 処理に失敗しました');
+  }
+}
+
+async function checkScheduleOnLoad() {
+  try {
+    const res = await fetch('/api/schedule/status');
+    const data = await res.json();
+    if (data.ok && data.is_due) {
+      openSchedulePrompt(data.state);
+    }
+  } catch (e) {
+    console.error('Schedule check failed:', e);
+  }
+}
+
+function openSchedulePrompt(state) {
+  const modal = document.getElementById('schedulePromptModal');
+  const desc = document.getElementById('schedulePromptDesc');
+  let lastText = '初回の定期チェックです。';
+  if (state && state.last_checked_at) {
+    const d = new Date(state.last_checked_at);
+    lastText = `前回の確認（${d.toLocaleDateString()}）から<strong>2週間</strong>が経過しました。`;
+  }
+  desc.innerHTML = `
+    ${lastText}<br><br>
+    GitHubリポジトリを自動リサーチし、ArtCraftアプリ（12本）の新バージョンがあれば差分のみを自動で安全に更新します。
+  `;
+  modal.style.display = 'flex';
+}
+
+function closeSchedulePrompt() {
+  document.getElementById('schedulePromptModal').style.display = 'none';
+}
+
+async function snoozePrompt(days) {
+  closeSchedulePrompt();
+  try {
+    await fetch(`/api/schedule/snooze?days=${days}`);
+    showToast(days === 1 ? '🕒 次回起動時にお知らせします' : '⏭️ 2週間後にまたお知らせします');
+  } catch (e) {
+    showToast('スキップ設定しました');
+  }
+}
+
+async function triggerTestPopup() {
+  showToast('🧪 2週間経過ポップアップをテスト起動します...');
+  try {
+    await fetch('/api/schedule/test-trigger');
+    setTimeout(checkScheduleOnLoad, 300);
+  } catch (e) {
+    showToast('❌ テストトリガー失敗');
+  }
+}
+
+// Full Auto Pipeline Console Flow
+let pipelineTimer = null;
+let lastEventIndex = 0;
+
+function startFullPipelineFromPrompt() {
+  closeSchedulePrompt();
+  openPipelineModal();
+  startPipelineExecution();
+}
+
+function openPipelineModal() {
+  const modal = document.getElementById('pipelineModal');
+  modal.style.display = 'flex';
+  
+  // Reset UI
+  document.getElementById('pipelineTitle').textContent = '🚀 全自動アップデート進行中';
+  document.getElementById('pipelineBadge').textContent = 'リサーチ中';
+  document.getElementById('pipelineBadge').style.background = '#3b82f6';
+  
+  setStepState(1);
+  document.getElementById('currentStatusText').textContent = 'GitHub Releases の全リポジトリを調査しています...';
+  document.getElementById('pipelineProgressFill').style.width = '5%';
+  document.getElementById('pipelineProgressPercent').textContent = '5%';
+  document.getElementById('currentStatusSub').innerHTML = '<span>全12アプリを順次スキャン中</span><span id="pipelineProgressPercent">5%</span>';
+  
+  document.getElementById('pipelineFinishSummary').style.display = 'none';
+  document.getElementById('btnPipelineDone').style.display = 'none';
+
+  // Initialize 12 App Rows
+  const grid = document.getElementById('pipelineResearchGrid');
+  grid.innerHTML = '';
+  allApps.forEach(app => {
+    const row = document.createElement('div');
+    row.className = 'research-row';
+    row.id = `pipe-row-${app.name.toLowerCase()}`;
+    row.innerHTML = `
+      <span>${app.name}</span>
+      <span style="color: var(--text-muted); font-size: 11px;">待機中...</span>
+    `;
+    grid.appendChild(row);
+  });
+}
+
+function closePipelineModal() {
+  if (pipelineTimer) clearInterval(pipelineTimer);
+  document.getElementById('pipelineModal').style.display = 'none';
+  fetchStatus();
+}
+
+function setStepState(activeStep) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`step${i}`);
+    if (i < activeStep) {
+      el.className = 'step-item completed';
+      el.querySelector('.step-dot').textContent = '✓';
+    } else if (i === activeStep) {
+      el.className = 'step-item active';
+      el.querySelector('.step-dot').textContent = i;
+    } else {
+      el.className = 'step-item';
+      el.querySelector('.step-dot').textContent = i;
+    }
+  }
+}
+
+async function startPipelineExecution() {
+  lastEventIndex = 0;
+  try {
+    const res = await fetch('/api/pipeline/start');
+    const data = await res.json();
+    if (!data.ok) {
+      alert(data.error);
+      closePipelineModal();
+      return;
+    }
+    pipelineTimer = setInterval(pollPipelineProgress, 400);
+  } catch (e) {
+    alert('パイプラインの開始に失敗しました: ' + e);
+    closePipelineModal();
+  }
+}
+
+async function pollPipelineProgress() {
+  try {
+    const res = await fetch(`/api/pipeline/progress?since=${lastEventIndex}`);
+    const data = await res.json();
+    if (!data.ok) return;
+
+    if (data.events && data.events.length > 0) {
+      data.events.forEach(ev => {
+        handlePipelineEvent(ev);
+      });
+      lastEventIndex = data.total_events;
+    }
+
+    if (!data.running && data.summary) {
+      clearInterval(pipelineTimer);
+      handlePipelineFinished(data.summary);
+    } else if (!data.running && data.error) {
+      clearInterval(pipelineTimer);
+      document.getElementById('currentStatusText').textContent = `❌ エラー: ${data.error}`;
+      document.getElementById('btnPipelineDone').style.display = 'block';
+    }
+  } catch (e) {
+    console.error('Progress poll error:', e);
+  }
+}
+
+function handlePipelineEvent(ev) {
+  const phase = ev.phase;
+  const msg = ev.message;
+  const d = ev.data;
+
+  if (phase === 'researching') {
+    setStepState(1);
+    const row = document.getElementById(`pipe-row-${d.name.toLowerCase()}`);
+    if (row) {
+      row.className = 'research-row active';
+      row.children[1].innerHTML = '<span style="color: #60a5fa;">🔍 調査中...</span>';
+    }
+    document.getElementById('currentStatusText').textContent = msg;
+    const pct = Math.round((d.index / d.total) * 40);
+    document.getElementById('pipelineProgressFill').style.width = `${pct}%`;
+    document.getElementById('pipelineProgressPercent').textContent = `${pct}%`;
+  } else if (phase === 'researched') {
+    const row = document.getElementById(`pipe-row-${d.name.toLowerCase()}`);
+    if (row) {
+      row.className = 'research-row';
+      if (d.has_update) {
+        row.children[1].innerHTML = `<strong style="color: #facc15;">▲ v${d.latest_version}</strong>`;
+      } else {
+        row.children[1].innerHTML = `<span style="color: #34d399;">✅ v${d.local_version || '最新'}</span>`;
+      }
+    }
+  } else if (phase === 'research_summary') {
+    setStepState(2);
+    document.getElementById('currentStatusText').textContent = msg;
+    document.getElementById('pipelineProgressFill').style.width = '50%';
+    document.getElementById('pipelineProgressPercent').textContent = '50%';
+  } else if (phase === 'update_start') {
+    setStepState(3);
+    document.getElementById('pipelineBadge').textContent = '更新インストール中';
+    document.getElementById('pipelineBadge').style.background = '#f59e0b';
+    document.getElementById('currentStatusText').textContent = msg;
+  } else if (phase === 'app_step') {
+    setStepState(3);
+    document.getElementById('currentStatusText').textContent = msg;
+    if (d && d.percent !== null && d.percent !== undefined) {
+      const basePct = 50 + Math.round(d.percent * 0.45);
+      document.getElementById('pipelineProgressFill').style.width = `${basePct}%`;
+      document.getElementById('pipelineProgressPercent').textContent = `${basePct}%`;
+    }
+  } else if (phase === 'all_latest') {
+    setStepState(4);
+    document.getElementById('currentStatusText').textContent = '✨ すべてのアプリが最新です';
+  }
+}
+
+function handlePipelineFinished(summary) {
+  setStepState(4);
+  document.getElementById('pipelineTitle').textContent = '🎉 全自動アップデート完了';
+  document.getElementById('pipelineBadge').textContent = '完了';
+  document.getElementById('pipelineBadge').style.background = '#10b981';
+
+  document.getElementById('pipelineProgressFill').style.width = '100%';
+  document.getElementById('pipelineProgressPercent').textContent = '100%';
+  document.getElementById('currentStatusText').textContent = 'すべてのリサーチと安全更新が完了しました！';
+
+  const sumBox = document.getElementById('pipelineFinishSummary');
+  sumBox.style.display = 'block';
+
+  if (summary.updates_count > 0) {
+    document.getElementById('finishTitle').textContent = `🎉 ${summary.updated_count} 本のアプリを安全に更新しました！`;
+    document.getElementById('finishDetail').textContent = `更新成功: ${summary.updated_count}本 / 最新維持: ${summary.total_apps - summary.updates_count}本`;
+  } else {
+    document.getElementById('finishTitle').textContent = `✨ 全12本すべて最新バージョンです！`;
+    document.getElementById('finishDetail').textContent = `外付けSSD上の全アプリが正常かつ最新状態に保たれています。`;
+  }
+
+  if (summary.next_remind_at) {
+    const nextD = new Date(summary.next_remind_at);
+    document.getElementById('finishNextSchedule').textContent = `次回のお知らせ予定日: ${nextD.toLocaleDateString()}（2週間後）`;
+  }
+
+  document.getElementById('btnPipelineDone').style.display = 'block';
+  showToast('🎉 リサーチ＆差分アップデートが完了しました！');
+}
+
+fetchStatus();
+checkUpdates(false);
+checkScheduleOnLoad(); // Check 2-week schedule immediately on open
+setInterval(fetchStatus, 5000);
+</script>
+</body>
+</html>
